@@ -69,10 +69,7 @@ class AsyncAPI(BaseAPIWrapper):
         Returns:
             FullBookList: The full book list for the specified country.
         """
-        return await self.get(
-            method=f"/full-book-list?country_id={country_id}",
-            response_type=FullBookList
-        )
+        return SyncAPI().get_books_list(country_id=country_id)
 
     async def get_book(self, url: str) -> BookInfo:
         """
@@ -111,7 +108,7 @@ class AsyncAPI(BaseAPIWrapper):
         Returns:
             TaskInfo: The retrieved task information.
         """
-        return await self.get(method=method, response_type=TaskInfo)
+        return await self.get(method, response_type=TaskInfo)
 
 
 class SyncAPI(BaseAPIWrapper):
@@ -156,7 +153,7 @@ class SyncAPI(BaseAPIWrapper):
             FullBookList: The full book list for the specified country.
         """
         return self.get(
-            method=f"/full-book-list?country_id={country_id}",
+            f"/full-book-list?country_id={country_id}",
             response_type=FullBookList
         )
 
@@ -197,4 +194,4 @@ class SyncAPI(BaseAPIWrapper):
         Returns:
             TaskInfo: The retrieved task information.
         """
-        return self.get(method=method, response_type=TaskInfo)
+        return self.get(method, response_type=TaskInfo)
