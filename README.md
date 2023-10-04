@@ -24,7 +24,7 @@ $ pip install gdzru --upgrade
 
 ### Latest version
 ```bash
-$ pip install https://github.com/OctoDiary/OctoDiary-py/archive/main.zip --upgrade
+$ pip install https://github.com/Den4ikSuperOstryyPer4ik/GDZ-py/archive/main.zip --upgrade
 ```
 
 ## Using
