@@ -32,7 +32,7 @@ class AsyncAPI(BaseAPIWrapper):
     An asynchronous wrapper for the gdz.ru API.
     """
 
-    async def get(self, url: str, response_type: T = None, **kwargs) -> T | ClientResponse:
+    async def get(self, url: str, response_type: T = None, *, is_file: bool = False, **kwargs) -> T | ClientResponse:
         """
         Asynchronously sends a GET request to the specified URL.
 
@@ -49,7 +49,7 @@ class AsyncAPI(BaseAPIWrapper):
         Raises:
             gdzru.exceptions.APIError: If the response status >= 400, an APIError is raised with the status code
         """
-        url = self.BASE_URL + url if not url.startswith(self.BASE_URL) else url
+        url = self.BASE_URL + url if not url.startswith(self.BASE_URL) and not is_file else url
 
         async with ClientSession(headers=self.HEADERS) as session:
             response = await session.get(url, **kwargs)
@@ -93,8 +93,7 @@ class AsyncAPI(BaseAPIWrapper):
         Returns:
             bytes: The contents of the attachment.
         """
-        response = await self.get(url)
-        return response.content
+        return SyncAPI().get_attachment(url=url)
 
     get_cover = get_image = get_attachment
 
@@ -116,7 +115,7 @@ class SyncAPI(BaseAPIWrapper):
     A synchronous wrapper for the gdz.ru API.
     """
 
-    def get(self, url: str, response_type: T = None, **kwargs) -> T | requests.Response:
+    def get(self, url: str, response_type: T = None, *, is_file: bool = False, **kwargs) -> T | requests.Response:
         """
         Asynchronously sends a GET request to the specified URL.
 
@@ -133,9 +132,9 @@ class SyncAPI(BaseAPIWrapper):
         Raises:
             gdzru.exceptions.APIError: If the response status >= 400, an APIError is raised with the status code
         """
-        url = self.BASE_URL + url if not url.startswith(self.BASE_URL) else url
+        url = self.BASE_URL + url if not url.startswith(self.BASE_URL) and not is_file else url
 
-        response = requests.get(url, timeout=30, headers=self.HEADERS, **kwargs)
+        response = requests.get(url, timeout=30, headers=self.HEADERS, verify=not is_file, **kwargs)
 
         if response.status_code >= 400:
             raise APIError(response.url, response.status_code, response.text)
@@ -179,7 +178,7 @@ class SyncAPI(BaseAPIWrapper):
         Returns:
             bytes: The contents of the attachment.
         """
-        response = self.get(url)
+        response = self.get(url, is_file=True)
         return response.content
 
     get_cover = get_image = get_attachment
